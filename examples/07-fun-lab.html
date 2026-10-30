@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark">
+<title>Есть характер — интерактивная HTML-презентация</title>
+<style>
+  :root{--page:#101217;--ink:#f5f1e8;--muted:#a4a59f;--lime:#d9ff66;--violet:#bca8ff;--orange:#ff996b;--line:#ffffff20}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100dvh;background:var(--page);color:var(--ink);font-family:"Segoe UI",Arial,sans-serif;display:flex;flex-direction:column}
+  button,input{font:inherit}
+  button{cursor:pointer}
+  button:focus-visible,input:focus-visible{outline:3px solid var(--violet);outline-offset:5px}
+  button:disabled{opacity:.3;cursor:default}
+  button{touch-action:manipulation}
+  .topbar,.toolbar{width:min(1488px,calc(100% - 48px));margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-shrink:0}
+  .topbar{height:62px}
+  .brand{font-size:13px;font-weight:800;letter-spacing:2px}
+  .brand span{color:var(--lime)}
+  .top-actions{display:flex;align-items:center;gap:20px}
+  .offline{font-size:10px;letter-spacing:1.8px;color:var(--muted)}
+  .plain-button{border:0;background:none;color:var(--ink);padding:8px;font-size:12px}
+  main{display:grid;place-items:center;flex:1;min-height:0;padding:8px 0}
+  #stage{width:min(1440px,calc(100vw - 48px),calc((100dvh - 144px)*16/9));aspect-ratio:16/9;position:relative;container-type:inline-size;border-radius:22px;box-shadow:0 24px 80px #0005}
+  .slide{width:100%;height:100%;position:absolute;inset:0;overflow:hidden;border-radius:22px;padding:4.7cqw 5.8cqw;isolation:isolate;background:#191c23;color:var(--ink);display:flex;flex-direction:column}
+  .slide[hidden]{display:none!important}
+  .slide::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none}
+  .slide.active .entrance{animation:enter .55s cubic-bezier(.2,.7,.2,1) both}
+  .slide.active .delayed{animation-delay:.12s}
+  @keyframes enter{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+  .eyebrow{font-size:.88cqw;letter-spacing:.21em;text-transform:uppercase;font-weight:700;margin-bottom:2.4cqw;display:flex;align-items:center;gap:1.1cqw}
+  .eyebrow::before{content:"";width:2.2cqw;height:2px;background:currentColor}
+  h1,h2,p{margin:0}
+  h1{font-size:6.9cqw;line-height:1.02;letter-spacing:-.055em;font-weight:750}
+  h2{font-size:5.2cqw;line-height:1.05;letter-spacing:-.045em;font-weight:750}
+  .body{font-size:1.45cqw;line-height:1.55;margin-top:1.8cqw;max-width:37cqw;color:var(--muted)}
+  .caption{font-size:1cqw;line-height:1.5;color:var(--muted)}
+  .accent{color:var(--lime)}
+  .slide-number{position:absolute;right:3cqw;top:3cqw;font:600 1.05cqw Consolas,monospace;opacity:.42}
+  .split{display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:5cqw;flex:1;min-height:0}
+  .button{display:inline-flex;align-items:center;justify-content:center;gap:1cqw;border:0;border-radius:100px;padding:1.05cqw 1.9cqw;font-size:1.13cqw;font-weight:700;background:var(--lime);color:#151a0c;transition:transform .18s,background .18s;text-decoration:none}
+  .button:hover{transform:translateY(-3px);background:#e7ffab}
+  .button.secondary{background:#ffffff10;border:1px solid currentColor;color:inherit}
+  .button-row{display:flex;align-items:center;gap:1.2cqw;margin-top:2.7cqw;flex-wrap:wrap}
+  .mono{font-family:Consolas,"Courier New",monospace}
+  .bottom-note{margin-top:auto;padding-top:1.7cqw}
+  /* 01. Cover */
+  #s1{background:#1c2230}
+  #s1::before{background:radial-gradient(ellipse at 100% 5%,#6967d936,transparent 60%),linear-gradient(120deg,transparent 65%,#ffffff04 65%)}
+  #s1 h1{max-width:70cqw}
+  .hero-label{position:absolute;right:5.8cqw;bottom:5.2cqw;font-size:1.05cqw;line-height:1.7;text-align:right;color:#a4a9c0}
+  .hero-label strong{display:block;color:var(--violet);font:700 6.7cqw/1 Consolas,monospace;letter-spacing:-.08em;margin-bottom:.7cqw}
+  #welcome-status{min-height:1.6em}
+  /* 02. Hover */
+  #s2{background:#e9e5db;color:#222620}
+  #s2 .body,#s2 .caption{color:#686b61}
+  .tilt-scene{perspective:1000px;display:grid;place-items:center}
+  #tilt-card{width:100%;min-height:29cqw;background:#d7fb62;color:#27351d;padding:3cqw;display:flex;flex-direction:column;justify-content:space-between;border-radius:12px;box-shadow:1.2cqw 1.5cqw 0 #29321f18;transform:rotateY(var(--ry,-9deg)) rotateX(var(--rx,5deg)) rotateZ(-4deg);transition:transform .15s}
+  .tilt-title{font-size:4.5cqw;letter-spacing:-.06em;font-weight:800;line-height:1.03}
+  .tilt-stamp{align-self:flex-end;border:2px solid #2f4024;border-radius:100px;padding:.6cqw 1.3cqw;font-size:1cqw;font-weight:800;transform:rotate(-8deg)}
+  /* 03. Jokes */
+  #s3{background:#302548}
+  #s3::before{background:radial-gradient(circle at 90% 80%,#d0adff20,transparent 50%)}
+  #s3 .eyebrow{color:var(--violet)}
+  #joke-text{font-size:3.6cqw;line-height:1.2;letter-spacing:-.035em;min-height:3.6em;max-width:72cqw;font-weight:650}
+  .quote-mark{font:10cqw/.5 Georgia,serif;color:var(--violet);margin-top:2cqw}
+  .joke-footer{display:flex;justify-content:space-between;align-items:center;margin-top:auto}
+  #joke-number{font:1.05cqw Consolas,monospace;color:#c5b4de}
+  /* 04. Slider */
+  #s4{background:#202d2b}
+  #s4 .eyebrow{color:var(--lime)}
+  .coffee-metric{font:700 12cqw/.9 Consolas,monospace;letter-spacing:-.1em;color:var(--lime);white-space:nowrap}
+  .coffee-metric small{font-size:4cqw;letter-spacing:-.05em}
+  #coffee-mode{min-height:2.6em;font-size:1.7cqw;font-weight:600;line-height:1.3;margin-top:1.8cqw}
+  .slider-wrap{margin-top:2.4cqw;max-width:39cqw}
+  #coffee{width:100%;accent-color:var(--lime);cursor:ew-resize}
+  .range-labels{display:flex;justify-content:space-between;margin-top:.6cqw;font-size:.94cqw;color:#9aaea4}
+  .bar-chart{display:flex;flex-direction:column;gap:2.1cqw}
+  .chart-row{display:grid;grid-template-columns:1fr auto;gap:.8cqw;font-size:1.15cqw}
+  .chart-track{grid-column:1/-1;background:#ffffff0d;height:1.15cqw;border-radius:3px;overflow:hidden}
+  .chart-fill{height:100%;width:var(--value);background:var(--bar);transition:width .4s ease}
+  /* 05. Game */
+  #s5{background:#191f2e}
+  #s5 .eyebrow{color:#9ab6ff}
+  .score{font-size:1.6cqw;margin-top:2cqw}
+  #bug-score{color:var(--lime);font:700 3.4cqw Consolas,monospace;margin-left:.6cqw}
+  .bug-arena{height:29cqw;position:relative;border:1px solid #5972ad55;border-radius:14px;background:radial-gradient(#7d95cd25 1px,transparent 1px);background-size:1.5cqw 1.5cqw;overflow:hidden}
+  #bug{position:absolute;left:42%;top:37%;width:5.6cqw;height:5.6cqw;border:0;border-radius:50%;background:#d9ff66;color:#223016;display:grid;place-items:center;font-size:3cqw;box-shadow:0 0 3cqw #d9ff6620;transition:left .18s,top .18s,transform .18s}
+  #bug:hover{transform:scale(1.09)}
+  .arena-label{position:absolute;bottom:1.5cqw;left:1.5cqw;right:1.5cqw;font-size:.95cqw;color:#98a9d1;text-align:center;pointer-events:none}
+  #bug-message{min-height:2.5em}
+  /* 06. Flip */
+  #s6{background:#473028}
+  #s6 .eyebrow{color:var(--orange)}
+  #s6 .body,#s6 .caption{color:#d4bdb0}
+  #flip-card{height:29cqw;position:relative;border:0;padding:0;background:transparent;perspective:1200px;text-align:left;color:#2c231e;width:100%}
+  .flip-inner{display:block;position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .7s cubic-bezier(.2,.7,.2,1)}
+  #flip-card[aria-pressed="true"] .flip-inner{transform:rotateY(180deg)}
+  .flip-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:14px;padding:2.5cqw;display:flex;flex-direction:column;justify-content:space-between;background:#ffb08b}
+  .flip-face.back{transform:rotateY(180deg);background:#f3e6d7}
+  .flip-face .label{font-size:.95cqw;letter-spacing:.18em;font-weight:700}
+  .flip-face strong{font-size:3.5cqw;line-height:1.08;letter-spacing:-.045em}
+  .flip-face .hint{font-size:1cqw}
+  /* 07. Quiz */
+  #s7{background:#242633}
+  #s7 .eyebrow{color:var(--violet)}
+  .question{font-size:1.5cqw;line-height:1.5;margin-top:1.8cqw;color:#c1bfd0}
+  .answers{display:flex;flex-direction:column;gap:1cqw}
+  .answer{border:1px solid #ffffff25;border-radius:9px;background:#ffffff04;color:var(--ink);text-align:left;padding:1.3cqw 1.5cqw;font-size:1.25cqw;display:flex;align-items:center;gap:1.3cqw;transition:background .2s,border-color .2s}
+  .answer:hover{background:#ffffff0d;border-color:#bca8ff}
+  .answer span{font:1.1cqw Consolas,monospace;color:var(--violet)}
+  .answer.correct{background:#d9ff6618;border-color:var(--lime)}
+  .answer.wrong{background:#ff996b13;border-color:var(--orange)}
+  #quiz-feedback{font-size:1.07cqw;line-height:1.5;min-height:3em;margin-top:1.8cqw;color:#b6b4c8}
+  /* 08. Table and surprise */
+  #s8{background:#eee8db;color:#2b2a25;transition:background .35s}
+  #s8 .body,#s8 .caption{color:#77746a}
+  table{border-collapse:collapse;width:100%;font-size:1.25cqw}
+  th{text-align:left;font-size:.85cqw;text-transform:uppercase;letter-spacing:.14em;color:#858174;padding:0 0 1.4cqw;font-weight:600}
+  td{border-top:1px solid #2b2a2526;padding:1.3cqw 0}
+  td:last-child{text-align:right;font-weight:600}
+  .panic{margin-top:2.2cqw;background:#cc452f;color:white}
+  .panic:hover{background:#b73724}
+  #panic-status{margin-top:1.4cqw;font-size:1.2cqw;min-height:2.8em;line-height:1.4}
+  #s8.surprised{background:#d9ff66}
+  #s8.surprised h2{animation:wiggle .6s both}
+  @keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+  /* 09. End */
+  #s9{background:#253c33}
+  #s9::before{background:radial-gradient(ellipse at 90% 20%,#d9ff6625,transparent 60%)}
+  #s9 h2{font-size:7.3cqw;position:relative;z-index:1}
+  .gg{position:absolute;right:3.5cqw;top:15cqw;font:800 22cqw/1 Consolas,monospace;letter-spacing:-.13em;color:#d9ff6611;z-index:-1}
+  #s9 .body{color:#becfc0;max-width:50cqw}
+  #party-status{min-height:1.5em;margin-top:1.4cqw;font-size:1.15cqw;color:var(--lime)}
+  /* Navigation */
+  .toolbar{height:66px}
+  .keyboard-hint{font-size:11px;color:#82878c;min-width:210px}
+  .dots{display:flex;gap:8px}
+  .dot{width:9px;height:9px;border:0;border-radius:100%;background:#454a50;padding:0;position:relative}
+  .dot::after{content:"";position:absolute;inset:-7px}
+  .dot[aria-current="true"]{background:var(--lime)}
+  .nav{display:flex;align-items:center;gap:7px;min-width:210px;justify-content:flex-end}
+  .nav-arrow{width:35px;height:35px;background:#ffffff09;border:1px solid #ffffff1a;border-radius:50%;color:var(--ink);font-size:17px}
+  #counter{min-width:64px;text-align:center;font:12px Consolas,monospace}
+  dialog{background:#1d2129;color:var(--ink);border:1px solid #ffffff20;border-radius:18px;padding:28px;width:min(880px,92vw);max-height:85dvh}
+  dialog::backdrop{background:#050609bb;backdrop-filter:blur(8px)}
+  .dialog-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+  .dialog-head h2{font-size:24px;letter-spacing:-.02em}
+  .overview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .overview-item{border:1px solid #ffffff20;background:#ffffff04;color:var(--ink);padding:20px;text-align:left;border-radius:9px;font-size:14px;line-height:1.4}
+  .overview-item span{display:block;color:var(--lime);font:12px Consolas,monospace;margin-bottom:12px}
+  .overview-item:hover{border-color:var(--lime)}
+  .confetti-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:5}
+  .confetti-piece{position:absolute;left:var(--x);top:-25px;width:.65cqw;height:1.5cqw;background:var(--color);animation:confetti-fall var(--duration) ease-in forwards;animation-delay:var(--delay);border-radius:1px}
+  @keyframes confetti-fall{from{transform:translateY(-5cqw) rotate(0deg);opacity:1}to{transform:translateY(68cqw) rotate(var(--spin));opacity:0}}
+  #stage:fullscreen{width:100vw;height:100dvh;aspect-ratio:auto;border-radius:0;background:#101217}
+  #stage:fullscreen .slide{border-radius:0}
+  @media(max-width:650px){
+    .topbar,.toolbar{width:calc(100% - 28px)}
+    .offline,.keyboard-hint,.dots{display:none}
+    .top-actions{gap:6px}
+    .topbar{height:54px}
+    .toolbar{height:60px;justify-content:center}
+    .nav{justify-content:center;min-width:0}
+    #stage{width:min(calc(100vw - 24px),calc((100dvh - 144px)*.8));aspect-ratio:4/5;border-radius:15px}
+    .slide{padding:6cqw;border-radius:15px}
+    .eyebrow{font-size:2.3cqw;margin-bottom:5cqw;gap:2cqw}
+    .eyebrow::before{width:5cqw}
+    .slide-number{font-size:2.4cqw;top:6cqw;right:6cqw}
+    h1{font-size:11.3cqw}
+    h2{font-size:8.7cqw}
+    .body{font-size:3.3cqw;margin-top:3.3cqw;max-width:none}
+    .caption{font-size:2.7cqw}
+    .button{font-size:3cqw;padding:2.8cqw 4cqw}
+    .button-row{margin-top:5cqw;gap:3cqw}
+    .bottom-note{padding-top:3cqw}
+    .split{grid-template-columns:1fr;gap:5cqw;align-content:start;align-items:start;flex:0 0 auto}
+    #s1 h1{max-width:none}
+    .hero-label{display:none}
+    .hero-label strong{font-size:14cqw}
+    #welcome-status{max-width:55cqw}
+    #tilt-card{min-height:43cqw;padding:5cqw}
+    .tilt-title{font-size:7cqw}
+    .tilt-stamp{font-size:2.4cqw;padding:1cqw 3cqw}
+    #joke-text{font-size:7.3cqw;line-height:1.25;max-width:none;min-height:5em}
+    .quote-mark{font-size:20cqw;margin-top:8cqw}
+    .joke-footer{align-items:flex-start;gap:3cqw}
+    #joke-number{font-size:2.8cqw;padding-top:3cqw}
+    .coffee-metric{font-size:19cqw}
+    .coffee-metric small{font-size:7cqw}
+    #coffee-mode{font-size:3.6cqw;margin-top:2cqw;min-height:1.4em}
+    .slider-wrap{max-width:none;margin-top:3cqw}
+    .range-labels{font-size:2.5cqw}
+    #s4 .split{gap:5cqw;grid-template-columns:1fr}
+    #s4 .body{display:none}
+    #s4 h2{font-size:7cqw;max-width:55cqw}
+    #s4 .coffee-metric{position:absolute;right:7cqw;top:17cqw;font-size:14cqw}
+    #s4 .coffee-metric small{font-size:5cqw}
+    .bar-chart{gap:3cqw}
+    .chart-row{font-size:3cqw;gap:1.5cqw}
+    .chart-track{height:2.3cqw}
+    .score{font-size:3.4cqw;margin-top:3cqw}
+    #bug-score{font-size:5.2cqw}
+    .bug-arena{height:41cqw}
+    #bug{width:11cqw;height:11cqw;font-size:6cqw}
+    .arena-label{font-size:2.5cqw;bottom:3cqw;left:3cqw;right:3cqw}
+    #bug-message{min-height:1.5em}
+    #flip-card{height:47cqw}
+    .flip-face{padding:5cqw}
+    .flip-face .label{font-size:2.5cqw}
+    .flip-face strong{font-size:6cqw}
+    .flip-face .hint{font-size:2.6cqw}
+    .question{font-size:3.6cqw;margin-top:3cqw}
+    .answers{gap:2cqw}
+    .answer{padding:3cqw;font-size:3.25cqw;gap:3cqw}
+    .answer span{font-size:2.9cqw}
+    #quiz-feedback{font-size:2.8cqw;margin-top:3cqw;min-height:3em}
+    #s7 .split{gap:4cqw}
+    table{font-size:3.1cqw}
+    th{font-size:2.3cqw;padding-bottom:3cqw}
+    td{padding:3cqw 0}
+    #s8 h2{font-size:8cqw}
+    #s8 .split{gap:3.5cqw}
+    #s8 td{padding:2.4cqw 0}
+    .panic{margin-top:4cqw}
+    #panic-status{font-size:3cqw;margin-top:3cqw}
+    #s9 h2{font-size:12cqw}
+    #s9 .body{max-width:none}
+    .gg{top:auto;bottom:5cqw;font-size:35cqw;right:8cqw}
+    #party-status{font-size:3cqw;margin-top:4cqw}
+    .overview-grid{grid-template-columns:1fr 1fr}
+    .overview-item{padding:14px;font-size:12px}
+    .confetti-piece{width:1.4cqw;height:3cqw}
+    @keyframes confetti-fall{to{transform:translateY(140cqw) rotate(var(--spin));opacity:0}}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.001ms!important;animation-delay:0ms!important;transition-duration:.001ms!important}
+  }
+  @media print{
+    body{display:block;background:white}.topbar,.toolbar,dialog{display:none!important}
+    main{display:block;padding:0}#stage{width:100%;box-shadow:none;aspect-ratio:auto}
+    .slide,.slide[hidden]{position:relative;display:flex!important;width:100%;height:56.25cqw;break-after:page;border-radius:0}
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">PLAY<span>DECK.</span></div>
+  <div class="top-actions"><span class="offline">РАБОТАЕТ БЕЗ ИНТЕРНЕТА</span><button class="plain-button" id="overview-open" type="button">Все слайды ↗</button><button class="plain-button" id="fullscreen" type="button" aria-label="Полный экран" title="Полный экран (F)">⛶</button></div>
+</header>
+<main>
+<div id="stage" aria-label="Интерактивная презентация">
+  <section class="slide active" id="s1" data-title="Есть характер">
+    <span class="slide-number">01</span>
+    <div class="eyebrow entrance accent">Интерактивная лаборатория</div>
+    <h1 class="entrance">Презентация,<br>у которой<br>есть <span class="accent">характер.</span></h1>
+    <p class="body entrance delayed">Можно листать. Можно нажимать.<br>Некоторые кнопки этого очень ждут.</p>
+    <div class="button-row entrance delayed"><button class="button" id="welcome-button" type="button">Включить хорошее настроение ↗</button></div>
+    <p class="caption bottom-note" id="welcome-status" aria-live="polite">Начните со стрелки вправо. Или с любопытства.</p>
+    <div class="hero-label"><strong>09</strong>слайдов с сюрпризами<br>и без серьёзного лица</div>
+  </section>
+  <section class="slide" id="s2" data-title="Наведи. Оно живое." hidden>
+    <span class="slide-number">02</span><div class="eyebrow">Немного магии CSS</div>
+    <div class="split">
+      <div class="entrance"><h2>Наведи.<br>Оно <em>живое.</em></h2><p class="body">Карточка следит за курсором.<br>Почти как дедлайн за тобой.</p><p class="caption bottom-note">На телефоне можно просто полюбоваться.</p></div>
+      <div class="tilt-scene entrance delayed"><div id="tilt-card"><span class="mono caption">status: surprisingly_ok</span><div class="tilt-title">У меня<br>всё работает*</div><span class="tilt-stamp">* НА МОЁМ КОМПЬЮТЕРЕ</span></div></div>
+    </div>
+  </section>
+  <section class="slide" id="s3" data-title="Шутки по запросу" hidden>
+    <span class="slide-number">03</span><div class="eyebrow">Служба несерьёзной поддержки</div>
+    <div class="quote-mark entrance" aria-hidden="true">“</div>
+    <p id="joke-text" class="entrance delayed" aria-live="polite">Я не откладываю дела. Я жду, когда появится драматургия.</p>
+    <div class="joke-footer"><button class="button" id="joke-next" type="button">Ещё одну ↻</button><span id="joke-number">01 / 06</span></div>
+    <p class="caption bottom-note">Побочный эффект: желание отправить это одногруппникам.</p>
+  </section>
+  <section class="slide" id="s4" data-title="Уровень кофеина" hidden>
+    <span class="slide-number">04</span><div class="eyebrow">Симулятор продуктивности</div>
+    <div class="split">
+      <div class="entrance"><h2>Уровень<br>кофеина</h2><p class="body">Передвиньте ползунок.<br>Наука в этом эксперименте не участвовала.</p><div class="slider-wrap"><label class="caption" for="coffee">Количество воображаемого кофе</label><input id="coffee" type="range" min="0" max="100" value="42" aria-label="Уровень кофеина"><div class="range-labels"><span>Хочу спать</span><span>Вижу звуки</span></div></div></div>
+      <div class="entrance delayed"><div class="coffee-metric"><span id="coffee-value">42</span><small>%</small></div><p id="coffee-mode" aria-live="polite">Пишу код и надеюсь</p><div class="bar-chart">
+        <div class="chart-row"><span>Желание всё переписать</span><span id="rewrite-value">47%</span><div class="chart-track"><div class="chart-fill" id="rewrite-bar" style="--value:47%;--bar:#d9ff66"></div></div></div>
+        <div class="chart-row"><span>Разговоры с монитором</span><span id="talk-value">29%</span><div class="chart-track"><div class="chart-fill" id="talk-bar" style="--value:29%;--bar:#bca8ff"></div></div></div>
+        <div class="chart-row"><span>Шанс лечь вовремя</span><span id="sleep-value">58%</span><div class="chart-track"><div class="chart-fill" id="sleep-bar" style="--value:58%;--bar:#ff996b"></div></div></div>
+      </div></div>
+    </div>
+  </section>
+  <section class="slide" id="s5" data-title="Поймай баг" hidden>
+    <span class="slide-number">05</span><div class="eyebrow">Мини-игра без установки</div>
+    <div class="split">
+      <div class="entrance"><h2>Поймай<br><span class="accent">баг.</span></h2><p class="body">Нажимайте на жука.<br>Он будет делать вид, что занят.</p><p class="score">Поймано:<strong id="bug-score">0</strong></p><p id="bug-message" class="caption bottom-note" aria-live="polite">Пять багов — и вы официально молодец.</p></div>
+      <div class="bug-arena entrance delayed"><button id="bug" type="button" aria-label="Поймать баг">🐞</button><span class="arena-label">Всё под контролем. Примерно.</span></div>
+    </div>
+  </section>
+  <section class="slide" id="s6" data-title="Ожидание и реальность" hidden>
+    <span class="slide-number">06</span><div class="eyebrow">Карточка с другой стороной</div>
+    <div class="split">
+      <div class="entrance"><h2>Переверни<br>ожидания</h2><p class="body">У каждого «сейчас быстренько»<br>есть обратная сторона.</p><p class="caption bottom-note">Нажмите на карточку. Она всё расскажет.</p></div>
+      <button id="flip-card" class="entrance delayed" type="button" aria-pressed="false" aria-label="Перевернуть карточку ожидания и реальности"><span class="flip-inner">
+        <span class="flip-face"><span class="label">ОЖИДАНИЕ</span><strong>Сейчас<br>быстренько.</strong><span class="hint">Нажмите, чтобы узнать правду ↗</span></span>
+        <span class="flip-face back"><span class="label">РЕАЛЬНОСТЬ</span><strong>Прошло три часа.<br>Я поменял шрифт.</strong><span class="hint">Да, этот выглядит лучше.</span></span>
+      </span></button>
+    </div>
+  </section>
+  <section class="slide" id="s7" data-title="Проверка на разработчика" hidden>
+    <span class="slide-number">07</span><div class="eyebrow">Вопрос с жизненным опытом</div>
+    <div class="split">
+      <div class="entrance"><h2>Код внезапно<br>заработал.</h2><p class="question">Что делаем дальше?</p><p class="caption bottom-note">Выберите вариант справа. Можно передумать.</p></div>
+      <div class="entrance delayed"><div class="answers">
+        <button class="answer" type="button" data-answer="away"><span>A</span>Аккуратно отойти от клавиатуры</button>
+        <button class="answer" type="button" data-answer="commit"><span>B</span>Сделать git commit</button>
+        <button class="answer" type="button" data-answer="planned"><span>C</span>Сказать, что так и было задумано</button>
+      </div><p id="quiz-feedback" aria-live="polite">Здесь все ответы жизненные. Но один полезнее.</p></div>
+    </div>
+  </section>
+  <section class="slide" id="s8" data-title="Подозрительная кнопка" hidden>
+    <span class="slide-number">08</span><div class="eyebrow">План был хороший</div>
+    <div class="split">
+      <div class="entrance"><h2>План<br>на вечер</h2><p class="body">Осталось сделать совсем немного.<br>Эту фразу мы уже слышали.</p><button id="panic-button" class="button panic" type="button">Не нажимать</button><p id="panic-status" aria-live="polite">Кнопка выглядит подозрительно спокойно.</p></div>
+      <table class="entrance delayed"><thead><tr><th>Задача</th><th>Ожидание</th></tr></thead><tbody>
+        <tr><td>Открыть проект</td><td>5 минут</td></tr><tr><td>Выбрать шрифт</td><td>2 часа</td></tr><tr><td>Поправить одну мелочь</td><td>До рассвета</td></tr><tr><td>Пойти спать</td><td>В следующей версии</td></tr>
+      </tbody></table>
+    </div>
+  </section>
+  <section class="slide" id="s9" data-title="Можно выдыхать" hidden>
+    <span class="slide-number">09</span><div class="eyebrow accent">Последний слайд. Честно.</div>
+    <h2 class="entrance">Всё.<br>Можно <span class="accent">выдыхать.</span></h2>
+    <p class="body entrance delayed">Вы пережили интерактивную презентацию.<br>И даже справились с кнопками.</p>
+    <div class="button-row entrance delayed"><button id="party-button" class="button" type="button">Заслуженные аплодисменты ✦</button><button id="restart" class="button secondary" type="button">Ещё круг ↻</button></div>
+    <p id="party-status" aria-live="polite">Хорошая работа. Серьёзно.</p><span class="gg" aria-hidden="true">GG</span>
+    <p class="caption bottom-note">Теперь можно закрыть вкладку. Или поймать ещё пару багов.</p>
+  </section>
+</div>
+</main>
+<footer class="toolbar">
+  <span class="keyboard-hint">← → листать &nbsp; F полный экран &nbsp; O обзор</span>
+  <nav class="dots" id="dots" aria-label="Выбор слайда"></nav>
+  <div class="nav"><button id="prev" class="nav-arrow" type="button" aria-label="Предыдущий слайд">←</button><button id="counter" class="plain-button" type="button" aria-label="Открыть список слайдов">01 / 09</button><button id="next" class="nav-arrow" type="button" aria-label="Следующий слайд">→</button></div>
+</footer>
+<dialog id="overview" aria-labelledby="overview-title"><div class="dialog-head"><h2 id="overview-title">Куда отправимся?</h2><button id="overview-close" class="plain-button" type="button" aria-label="Закрыть обзор">Закрыть ×</button></div><div class="overview-grid" id="overview-grid"></div></dialog>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const slides = [...document.querySelectorAll('.slide')];
+  const pad = n => String(n).padStart(2, '0');
+  let current = 0, jokeIndex = 0, score = 0;
+  const jokes = [
+    'Я не откладываю дела. Я жду, когда появится драматургия.',
+    'Мой код работает. Почему — это уже тема следующей презентации.',
+    'Поставил будильник на раннее утро. Утро отказалось сотрудничать.',
+    'Дедлайн — лучший способ понять, сколько можно сделать за ночь.',
+    'Опыт — это когда сразу знаешь, в каком месте будешь гуглить.',
+    'Сначала я боялся ошибок. Теперь мы просто здороваемся.'
+  ];
+  slides.forEach((slide, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button'; dot.className = 'dot';
+    dot.setAttribute('aria-label', 'Слайд ' + (i + 1) + ': ' + slide.dataset.title);
+    dot.addEventListener('click', () => show(i));
+    $('dots').append(dot);
+    const item = document.createElement('button');
+    item.type = 'button'; item.className = 'overview-item';
+    const label = document.createElement('span'); label.textContent = pad(i + 1);
+    item.append(label, document.createTextNode(slide.dataset.title));
+    item.addEventListener('click', () => { $('overview').close(); show(i); });
+    $('overview-grid').append(item);
+  });
+  function show(index) {
+    current = Math.max(0, Math.min(slides.length - 1, index));
+    slides.forEach((slide, i) => {
+      slide.hidden = i !== current;
+      slide.classList.toggle('active', i === current);
+      slide.setAttribute('aria-hidden', String(i !== current));
+    });
+    [...$('dots').children].forEach((dot, i) => dot.setAttribute('aria-current', String(i === current)));
+    $('counter').textContent = pad(current + 1) + ' / ' + pad(slides.length);
+    $('prev').disabled = current === 0; $('next').disabled = current === slides.length - 1;
+  }
+  $('prev').addEventListener('click', () => show(current - 1));
+  $('next').addEventListener('click', () => show(current + 1));
+  const openOverview = () => { if (!$('overview').open) $('overview').showModal(); };
+  $('overview-open').addEventListener('click', openOverview);
+  $('counter').addEventListener('click', openOverview);
+  $('overview-close').addEventListener('click', () => $('overview').close());
+  async function fullscreen() {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else if ($('stage').requestFullscreen) await $('stage').requestFullscreen();
+    } catch { /* Browser may disallow fullscreen in an embedded preview. */ }
+  }
+  $('fullscreen').addEventListener('click', fullscreen);
+  document.addEventListener('keydown', event => {
+    if (event.ctrlKey || event.metaKey || event.altKey || $('overview').open) return;
+    if (event.target.closest('input,textarea,select,[contenteditable="true"]')) return;
+    if (event.code === 'Space' && event.target.closest('button,a')) return;
+    if (['ArrowRight','PageDown','Space'].includes(event.code)) {event.preventDefault();show(current + 1);}
+    else if (['ArrowLeft','PageUp'].includes(event.code)) {event.preventDefault();show(current - 1);}
+    else if (event.code === 'Home') {event.preventDefault();show(0);}
+    else if (event.code === 'End') {event.preventDefault();show(slides.length - 1);}
+    else if (event.code === 'KeyF') {event.preventDefault();void fullscreen();}
+    else if (event.code === 'KeyO') {event.preventDefault();openOverview();}
+  });
+  const tilt = $('tilt-card');
+  tilt.addEventListener('pointermove', event => {
+    if (event.pointerType === 'touch') return;
+    const box = tilt.getBoundingClientRect();
+    tilt.style.setProperty('--ry', ((event.clientX - box.left) / box.width - .5) * 22 + 'deg');
+    tilt.style.setProperty('--rx', (.5 - (event.clientY - box.top) / box.height) * 18 + 'deg');
+  });
+  tilt.addEventListener('pointerleave', () => {tilt.style.removeProperty('--ry');tilt.style.removeProperty('--rx');});
+  $('joke-next').addEventListener('click', () => {
+    jokeIndex = (jokeIndex + 1) % jokes.length;
+    $('joke-text').textContent = jokes[jokeIndex];
+    $('joke-number').textContent = pad(jokeIndex + 1) + ' / ' + pad(jokes.length);
+  });
+  function updateCoffee() {
+    const value = Number($('coffee').value);
+    $('coffee-value').textContent = String(value);
+    $('coffee-mode').textContent = value < 20 ? 'Сначала бы проснуться' : value < 60 ? 'Пишу код и надеюсь' : value < 85 ? 'Сейчас всё перепишу' : 'Я уже вижу звуки';
+    for (const [id, amount] of [['rewrite',Math.min(100,Math.round(value * .9 + 9))],['talk',Math.round(value * .7)],['sleep',100 - value]]) {
+      $(id + '-value').textContent = amount + '%';
+      $(id + '-bar').style.setProperty('--value', amount + '%');
+    }
+  }
+  $('coffee').addEventListener('input', updateCoffee);
+  const bugPositions = [[12,15],[67,52],[26,59],[65,12],[36,28],[14,48],[59,37]];
+  $('bug').addEventListener('click', () => {
+    score++; $('bug-score').textContent = String(score);
+    const [left, top] = bugPositions[(score - 1) % bugPositions.length];
+    $('bug').style.left = left + '%'; $('bug').style.top = top + '%';
+    $('bug-message').textContent = score >= 5 ? 'Вы официально молодец. А баги, похоже, бесконечные.' : 'Пойман! Ещё ' + (5 - score) + ' до звания «молодец».';
+  });
+  $('flip-card').addEventListener('click', () => {
+    const card = $('flip-card');
+    card.setAttribute('aria-pressed', String(card.getAttribute('aria-pressed') !== 'true'));
+  });
+  document.querySelectorAll('[data-answer]').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('[data-answer]').forEach(item => item.classList.remove('correct','wrong'));
+    const correct = button.dataset.answer === 'commit';
+    button.classList.add(correct ? 'correct' : 'wrong');
+    $('quiz-feedback').textContent = correct ? 'Верно. Сначала сохранить удачу.' : button.dataset.answer === 'away' ? 'Звучит безопасно. Но сначала лучше сохранить рабочую версию.' : 'Убедительно. А теперь сохраните доказательства в git commit.';
+  }));
+  function confetti(slide) {
+    slide.querySelector('.confetti-layer')?.remove();
+    const layer = document.createElement('div');
+    layer.className = 'confetti-layer'; layer.setAttribute('aria-hidden','true');
+    const colors = ['#d9ff66','#bca8ff','#ff996b','#f7f1e4','#83d4ce'];
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    for (let i = 0; i < (reduced ? 0 : 48); i++) {
+      const piece = document.createElement('i'); piece.className = 'confetti-piece';
+      piece.style.cssText = '--x:' + (Math.random() * 100) + '%;--color:' + colors[i % colors.length] + ';--duration:' + (1.5 + Math.random() * 1.5) + 's;--delay:' + (Math.random() * .25) + 's;--spin:' + (Math.random() * 900 - 450) + 'deg';
+      layer.append(piece);
+    }
+    slide.append(layer);
+    setTimeout(() => layer.remove(), 4000);
+  }
+  $('welcome-button').addEventListener('click', () => {
+    $('welcome-status').textContent = 'Готово. Теперь официально можно улыбаться.';
+    confetti($('s1'));
+  });
+  $('panic-button').addEventListener('click', () => {
+    $('s8').classList.toggle('surprised');
+    const active = $('s8').classList.contains('surprised');
+    $('panic-status').textContent = active ? 'Вы нажали. Теперь вы главный. Поздравляем!' : 'Всё вернули обратно. Никто ничего не заметил.';
+    $('panic-button').textContent = active ? 'Сделать вид, что ничего не было' : 'Не нажимать';
+    if (active) confetti($('s8'));
+  });
+  $('party-button').addEventListener('click', () => {
+    $('party-status').textContent = 'Аплодисменты вам. И тому, кто придумал Ctrl+S.';
+    confetti($('s9'));
+  });
+  $('restart').addEventListener('click', () => {
+    jokeIndex = 0; score = 0;
+    $('joke-text').textContent = jokes[0]; $('joke-number').textContent = '01 / 06';
+    $('coffee').value = '42'; updateCoffee();
+    $('bug-score').textContent = '0'; $('bug').style.left = '42%'; $('bug').style.top = '37%';
+    $('bug-message').textContent = 'Пять багов — и вы официально молодец.';
+    $('flip-card').setAttribute('aria-pressed','false');
+    document.querySelectorAll('[data-answer]').forEach(item => item.classList.remove('correct','wrong'));
+    $('quiz-feedback').textContent = 'Здесь все ответы жизненные. Но один полезнее.';
+    $('s8').classList.remove('surprised'); $('panic-button').textContent = 'Не нажимать';
+    $('panic-status').textContent = 'Кнопка выглядит подозрительно спокойно.';
+    $('welcome-status').textContent = 'Начните со стрелки вправо. Или с любопытства.';
+    $('party-status').textContent = 'Хорошая работа. Серьёзно.';
+    document.querySelectorAll('.confetti-layer').forEach(layer => layer.remove());
+    show(0);
+  });
+  window.funDeck = Object.freeze({goTo:show, count:slides.length});
+  updateCoffee(); show(0);
+})();
+</script>
+</body>
+</html>

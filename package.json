@@ -1,0 +1,11 @@
+{
+  "name": "html-presentation-converter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local HTML slide capture through installed Google Chrome",
+  "type": "module",
+  "engines": {"node": ">=22"},
+  "scripts": {"test": "node --test --test-concurrency=1 tests/node.test.mjs tests/render.test.mjs tests/fun-deck.test.mjs"},
+  "dependencies": {"playwright": "1.62.1"},
+  "devDependencies": {"reveal.js": "5.2.1"}
+}

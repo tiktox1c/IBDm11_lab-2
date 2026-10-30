@@ -1,0 +1,14 @@
+* { box-sizing: border-box; }
+html, body { margin: 0; background: #e8edf3; font-family: 'Segoe UI', Arial, sans-serif; }
+.slide { width: 100vw; height: 100vh; padding: 7vh 8vw; background: #10273d; color: #f0f7ff; overflow: hidden; }
+.slide:nth-child(2) { background: #17675e; }
+.slide:nth-child(3) { background: #70421f; }
+h1 { font-size: clamp(28px, 4.5vw, 76px); margin: 2vh 0 5vh; line-height: 1.1; }
+h2 { font-size: clamp(24px, 3.4vw, 58px); margin: 2vh 0 5vh; }
+p, li { font-size: clamp(18px, 2.2vw, 36px); line-height: 1.5; }
+.number { font-size: 22px; color: #87dacc; letter-spacing: 3px; }
+.slide[hidden] { display: none; }
+table { border-collapse: collapse; width: 100%; font-size: 30px; }
+td, th { border-bottom: 2px solid #75c6b5; padding: 20px; text-align: left; }
+.columns { display: flex; align-items: center; gap: 6vw; }
+.columns img { width: 32%; }
